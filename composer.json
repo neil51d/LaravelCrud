@@ -20,9 +20,5 @@
             "Codeklopper\\LaravelCrud": "src/"
         }
     },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "0.0.1"
-        }
-    }
+    "minimum-stability": "dev"
 }
