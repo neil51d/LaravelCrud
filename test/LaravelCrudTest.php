@@ -10,7 +10,6 @@ class PostControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
     public function it_can_list_all_posts()
     {
         Post::factory()->count(5)->create();
@@ -21,7 +20,6 @@ class PostControllerTest extends TestCase
         $response->assertJsonCount(5);
     }
 
-    /** @test */
     public function it_can_create_a_post()
     {
         $data = [
@@ -37,7 +35,6 @@ class PostControllerTest extends TestCase
         $this->assertDatabaseHas('posts', $data);
     }
 
-    /** @test */
     public function it_can_show_a_post()
     {
         $post = Post::factory()->create();
@@ -51,7 +48,6 @@ class PostControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
     public function it_can_update_a_post()
     {
         $post = Post::factory()->create();
@@ -69,10 +65,8 @@ class PostControllerTest extends TestCase
         $this->assertDatabaseHas('posts', $data);
     }
 
-    /** @test */
     public function it_can_delete_a_post()
     {
-        $post = Post::factory()->create();
         $post = Post::factory()->create();
 
         $response = $this->deleteJson("/api/posts/{$post->id}");
