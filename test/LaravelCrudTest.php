@@ -73,6 +73,7 @@ class PostControllerTest extends TestCase
     public function it_can_delete_a_post()
     {
         $post = Post::factory()->create();
+        $post = Post::factory()->create();
 
         $response = $this->deleteJson("/api/posts/{$post->id}");
 
