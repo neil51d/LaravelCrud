@@ -1,24 +1,86 @@
 <?php
 
-use Mockery as m;
+namespace Tests\Feature;
 
-class LaravelCrudTest extends PHPUnit_Framework_TestCase {
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+use App\Models\Post;
 
-	public function tearDown()
-	{
-		m::close();
-	}
+class PostControllerTest extends TestCase
+{
+    use RefreshDatabase;
 
+    /** @test */
+    public function it_can_list_all_posts()
+    {
+        Post::factory()->count(5)->create();
 
-	public function testCrudCreation()
-	{
-		$modelName = "Post";
+        $response = $this->getJson('/api/posts');
 
-		$Crud = m::mock('Codeklopper\LaravelCrud\LaravelCrud');
+        $response->assertStatus(200);
+        $response->assertJsonCount(5);
+    }
 
-		$Crud->init($modelName);
+    /** @test */
+    public function it_can_create_a_post()
+    {
+        $data = [
+            'title' => 'Sample Post',
+            'content' => 'This is a sample content.',
+        ];
 
-		$this->assertEquals('Post', $Crud->model);
+        $response = $this->postJson('/api/posts', $data);
 
-	}
+        $response->assertStatus(201);
+        $response->assertJsonFragment($data);
+
+        $this->assertDatabaseHas('posts', $data);
+    }
+
+    /** @test */
+    public function it_can_show_a_post()
+    {
+        $post = Post::factory()->create();
+
+        $response = $this->getJson("/api/posts/{$post->id}");
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
+            'title' => $post->title,
+            'content' => $post->content,
+        ]);
+    }
+
+    /** @test */
+    public function it_can_update_a_post()
+    {
+        $post = Post::factory()->create();
+
+        $data = [
+            'title' => 'Updated Title',
+            'content' => 'Updated Content',
+        ];
+
+        $response = $this->putJson("/api/posts/{$post->id}", $data);
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment($data);
+
+        $this->assertDatabaseHas('posts', $data);
+    }
+
+    /** @test */
+    public function it_can_delete_a_post()
+    {
+        $post = Post::factory()->create();
+
+        $response = $this->deleteJson("/api/posts/{$post->id}");
+
+        $response->assertStatus(200);
+        $response->assertJson(['message' => 'Post deleted successfully']);
+
+        $this->assertDatabaseMissing('posts', [
+            'id' => $post->id,
+        ]);
+    }
 }
